@@ -19,7 +19,6 @@ public class Servicio {
     private int servicio_Id;
     private String servicio_Nombre;
     private int servicio_Precio;
-    private int servicio_Disponible;
     private int servicio_Estado_Id;
     private String servicio_Estado_Nombre;
     
@@ -52,14 +51,6 @@ public class Servicio {
         this.servicio_Precio = servicio_Precio;
     }
 
-    public int getServicio_Disponible() {
-        return servicio_Disponible;
-    }
-
-    public void setServicio_Disponible(int servicio_Disponible) {
-        this.servicio_Disponible = servicio_Disponible;
-    }
-
     public int getServicio_Estado_Id() {
         return servicio_Estado_Id;
     }
@@ -81,7 +72,7 @@ public class Servicio {
 
     @Override
     public String toString() {
-        return "Servicio{" + "servicio_Id=" + servicio_Id + ", servicio_Nombre=" + servicio_Nombre + ", servicio_Precio=" + servicio_Precio + ", servicio_Disponible=" + servicio_Disponible + ", servicio_Estado_Id=" + servicio_Estado_Id + ", servicio_Estado_Nombre=" + servicio_Estado_Nombre + '}';
+        return "Servicio{" + "servicio_Id=" + servicio_Id + ", servicio_Nombre=" + servicio_Nombre + ", servicio_Precio=" + servicio_Precio + ", servicio_Estado_Id=" + servicio_Estado_Id + ", servicio_Estado_Nombre=" + servicio_Estado_Nombre + '}';
     }
     
     // ######################### Conexion a la BD desde la clase #########################
@@ -96,6 +87,7 @@ public class Servicio {
             return false;
         } finally{
             conexion.cerrarConexion();
+            System.out.println("Conexion cerrada");
         }
         return true;
     }
@@ -106,7 +98,7 @@ public class Servicio {
         
         // Llenar la lista
         ConexionBD conexion = new ConexionBD();
-        String sql = "SELECT s.servicio_Id, s.servicio_Nombre, s.servicio_Precio, e.estado_Nombre FROM `servicio` s JOIN `estados` e ON (servicio_Estado_Id = estado_id)";
+        String sql = "SELECT s.servicio_Id, s.servicio_Nombre, s.servicio_Precio, e.estado_Nombre FROM `servicio` s JOIN `estados` e ON (servicio_Estado_Id = estado_id);";
         
         // Bloque TryCatch para obtener los errores e identificarlos
         try {
@@ -115,7 +107,7 @@ public class Servicio {
                 this.servicio_Id = rs.getInt("servicio_Id");
                 this.servicio_Nombre = rs.getString("servicio_Nombre");
                 this.servicio_Precio = rs.getInt("servicio_Precio");
-                this.servicio_Estado_Nombre = rs.getString("servicio_Estado_Nombre");
+                this.servicio_Estado_Nombre = rs.getString("estado_Nombre");
                 
                 // Creando el objeto
                 Servicio servicio = new Servicio();
@@ -132,7 +124,45 @@ public class Servicio {
             System.out.println("Error: " + e.getMessage());
         } finally {
             conexion.cerrarConexion();
+            System.out.println("Conexion cerrada");
         }
         return lista;
+    }
+    
+    // ---------------------------- U de CRUD para Servicios --------------------
+    public boolean actualizarServicio(){
+        ConexionBD conexion = new ConexionBD();
+        // Condiciones para validar la actualizacion de servicio_Estado_Id
+        if(this.servicio_Estado_Nombre == "Habilitado") this.servicio_Estado_Id = 1;
+        if(this.servicio_Estado_Nombre == "Deshabilitado")this.servicio_Estado_Id = 2;
+        // Se pepara el query para actualizar con los datos del objeto
+        String sql = "UPDATE `servicio` SET `servicio_Nombre`='" + this.servicio_Nombre + "',`servicio_Precio`='" + this.servicio_Precio + "',`servicio_Estado_Id`='" + this.servicio_Estado_Id + "' WHERE `servicio_Id`='" + this.servicio_Id + "';";
+        try {
+            conexion.actualizarBD(sql);
+        } catch (Exception e) {
+            System.out.println("Error: " + e.getMessage());
+            return false;
+        } finally{
+            conexion.cerrarConexion();
+            System.out.println("Conexion cerrada");
+        }
+        return true;
+    }
+    public static void main(String[] args) {
+        ArrayList<Servicio> lista = new ArrayList<>();
+        Servicio se = new Servicio();
+        lista = se.consultarServicios();
+        for(Servicio servicio: lista){
+            System.out.println(servicio.toString());
+        }
+        
+        se.setServicio_Id(1);
+        se.setServicio_Nombre("Mantenimiento de Equipos PC");
+        se.setServicio_Precio(55000);
+        se.setServicio_Estado_Nombre("Habilitado");
+        se.actualizarServicio();
+        se.consultarServicios(); 
+        
+        
     }
 }
