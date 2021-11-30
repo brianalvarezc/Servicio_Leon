@@ -1,5 +1,3 @@
-package Logica;
-
 
 import Persistencia.ConexionBD;
 import java.sql.ResultSet;
@@ -100,7 +98,7 @@ public class Servicio {
         
         // Llenar la lista
         ConexionBD conexion = new ConexionBD();
-        String sql = "SELECT s.servicio_Id, s.servicio_Nombre, s.servicio_Precio, s.servicio_Estado_Id, e.estado_Nombre FROM `servicio` s JOIN `estados` e ON (servicio_Estado_Id = estado_id);";
+        String sql = "SELECT s.servicio_Id, s.servicio_Nombre, s.servicio_Precio, e.estado_Nombre FROM `servicio` s JOIN `estados` e ON (servicio_Estado_Id = estado_id);";
         
         // Bloque TryCatch para obtener los errores e identificarlos
         try {
@@ -109,7 +107,6 @@ public class Servicio {
                 this.servicio_Id = rs.getInt("servicio_Id");
                 this.servicio_Nombre = rs.getString("servicio_Nombre");
                 this.servicio_Precio = rs.getInt("servicio_Precio");
-                this.servicio_Estado_Id = rs.getInt("servicio_Estado_Id");
                 this.servicio_Estado_Nombre = rs.getString("estado_Nombre");
                 
                 // Creando el objeto
@@ -117,59 +114,6 @@ public class Servicio {
                 servicio.setServicio_Id(servicio_Id);
                 servicio.setServicio_Nombre(servicio_Nombre);
                 servicio.setServicio_Precio(servicio_Precio);
-                servicio.setServicio_Estado_Id(servicio_Estado_Id);
-                servicio.setServicio_Estado_Nombre(servicio_Estado_Nombre);
-                
-                // Agregando el objeto creado a la lista
-                lista.add(servicio);
-            }
-            
-        } catch (SQLException e) {
-            System.out.println("Error: " + e.getMessage());
-        } finally {
-            conexion.cerrarConexion();
-            System.out.println("Conexion cerrada");
-        }
-        return lista;
-    }
-    // ---------------------------- R de CRUD para Servicios individuales --------------------
-    public ArrayList<Servicio> consultarServicio(){
-        
-        ArrayList<Servicio> lista = new ArrayList<>();
-        ConexionBD conexion = new ConexionBD();
-        String sql = "SELECT s.servicio_Id, s.servicio_Nombre, s.servicio_Precio, s.servicio_Estado_Id, e.estado_Nombre FROM `servicio` s JOIN `estados` e ON (servicio_Estado_Id = estado_id)";
-        
-        if(this.servicio_Id != 0){
-            sql += " WHERE s.servicio_Id = "+ this.servicio_Id +";";
-        }
-        else if(this.servicio_Nombre != null){
-            sql += " WHERE s.servicio_Nombre LIKE '%"+ this.servicio_Nombre +"%';";
-        }
-        else if(this.servicio_Precio != 0){
-            sql += " WHERE s.servicio_Precio = "+ this.servicio_Precio +";";
-        }
-        else if(this.servicio_Estado_Id != 0){
-            sql += " WHERE s.servicio_Estado_Id = "+ this.servicio_Estado_Id +";";
-        }else{
-            sql += ";";
-        }System.out.println(sql);
-        
-        // Bloque TryCatch para obtener los errores e identificarlos
-        try {
-            ResultSet rs = conexion.consultarBD(sql);
-            while(rs.next()){
-                this.servicio_Id = rs.getInt("servicio_Id");
-                this.servicio_Nombre = rs.getString("servicio_Nombre");
-                this.servicio_Precio = rs.getInt("servicio_Precio");
-                this.servicio_Estado_Id = rs.getInt("servicio_Estado_Id");
-                this.servicio_Estado_Nombre = rs.getString("estado_Nombre");
-            
-                // Creando el objeto
-                Servicio servicio = new Servicio();
-                servicio.setServicio_Id(servicio_Id);
-                servicio.setServicio_Nombre(servicio_Nombre);
-                servicio.setServicio_Precio(servicio_Precio);
-                servicio.setServicio_Estado_Id(servicio_Estado_Id);
                 servicio.setServicio_Estado_Nombre(servicio_Estado_Nombre);
                 
                 // Agregando el objeto creado a la lista
@@ -191,8 +135,6 @@ public class Servicio {
         // Condiciones para validar la actualizacion de servicio_Estado_Id
         if(this.servicio_Estado_Nombre == "Habilitado") this.servicio_Estado_Id = 1;
         if(this.servicio_Estado_Nombre == "Deshabilitado")this.servicio_Estado_Id = 2;
-        if(this.servicio_Estado_Id == 1) this.servicio_Estado_Nombre = "Habilitado";
-        if(this.servicio_Estado_Id == 2) this.servicio_Estado_Nombre = "Deshabilitado";
         // Se pepara el query para actualizar con los datos del objeto
         String sql = "UPDATE `servicio` SET `servicio_Nombre`='" + this.servicio_Nombre + "',`servicio_Precio`='" + this.servicio_Precio + "',`servicio_Estado_Id`='" + this.servicio_Estado_Id + "' WHERE `servicio_Id`='" + this.servicio_Id + "';";
         try {
@@ -206,27 +148,10 @@ public class Servicio {
         }
         return true;
     }
-    // ---------------------------- D de CRUD para Servicios --------------------
-        public boolean eliminarServicio(){
-        ConexionBD conexion = new ConexionBD();
-        // Se pepara el query para eliminar con los datos del objeto
-        String sql = "DELETE FROM `servicio` WHERE servicio_Id=" + this.servicio_Id + ";";
-        try {
-            conexion.borrarBD(sql);
-        } catch (Exception e) {
-            System.out.println("Error: " + e.getMessage());
-            return false;
-        } finally{
-            conexion.cerrarConexion();
-            System.out.println("Conexion cerrada");
-        }
-        return true;
-    }
     public static void main(String[] args) {
         ArrayList<Servicio> lista = new ArrayList<>();
         Servicio se = new Servicio();
-        se.setServicio_Nombre("Mantenim");
-        lista = se.consultarServicio();
+        lista = se.consultarServicios();
         for(Servicio servicio: lista){
             System.out.println(servicio.toString());
         }
