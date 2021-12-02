@@ -152,7 +152,8 @@ public class Servicio {
             sql += " WHERE s.servicio_Estado_Id = "+ this.servicio_Estado_Id +";";
         }else{
             sql += ";";
-        }System.out.println(sql);
+        }
+//        System.out.println(sql);
         
         // Bloque TryCatch para obtener los errores e identificarlos
         try {
@@ -182,7 +183,11 @@ public class Servicio {
             conexion.cerrarConexion();
             System.out.println("Conexion cerrada");
         }
-        return lista;
+        if(lista.size()>0){
+            return lista;
+        }else{
+            return null;
+        }
     }
     
     // ---------------------------- U de CRUD para Servicios --------------------
@@ -197,6 +202,7 @@ public class Servicio {
         String sql = "UPDATE `servicio` SET `servicio_Nombre`='" + this.servicio_Nombre + "',`servicio_Precio`='" + this.servicio_Precio + "',`servicio_Estado_Id`='" + this.servicio_Estado_Id + "' WHERE `servicio_Id`='" + this.servicio_Id + "';";
         try {
             conexion.actualizarBD(sql);
+            System.out.println("Servicio actualizado");
         } catch (Exception e) {
             System.out.println("Error: " + e.getMessage());
             return false;
@@ -213,6 +219,7 @@ public class Servicio {
         String sql = "DELETE FROM `servicio` WHERE servicio_Id=" + this.servicio_Id + ";";
         try {
             conexion.borrarBD(sql);
+            System.out.println("Servicio eliminado");
         } catch (Exception e) {
             System.out.println("Error: " + e.getMessage());
             return false;
@@ -222,15 +229,17 @@ public class Servicio {
         }
         return true;
     }
+//    metodo public void main para verificar el funcionamiento de los metodos   
     public static void main(String[] args) {
-        ArrayList<Servicio> lista = new ArrayList<>();
-        Servicio se = new Servicio();
-        se.setServicio_Nombre("Mantenim");
-        lista = se.consultarServicio();
-        for(Servicio servicio: lista){
-            System.out.println(servicio.toString());
-        }
-    
-        
+//        ArrayList<Servicio> lista = new ArrayList<>();
+//        Servicio se = new Servicio();
+//        se.setServicio_Nombre("Instalacion de Software");
+//        se.setServicio_Precio(30000);
+//        se.setServicio_Estado_Id(1);
+//        se.crearServicio();
+//        lista = se.consultarServicios();
+//        for(Servicio servicio: lista){
+//            System.out.println(servicio.toString());
+//        }
     }
 }

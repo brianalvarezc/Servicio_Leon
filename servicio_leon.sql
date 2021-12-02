@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 22-11-2021 a las 13:11:29
+-- Tiempo de generación: 02-12-2021 a las 10:54:09
 -- Versión del servidor: 10.4.21-MariaDB
 -- Versión de PHP: 8.0.11
 
@@ -30,6 +30,7 @@ SET time_zone = "+00:00";
 CREATE TABLE `cita` (
   `cita_Id` int(10) NOT NULL,
   `cita_Cliente_Nombre` varchar(100) NOT NULL,
+  `cita_Servicio_Id` int(10) NOT NULL,
   `cita_Fecha` varchar(100) NOT NULL,
   `cita_Hora` varchar(15) NOT NULL,
   `cita_Ubicacion` varchar(400) NOT NULL,
@@ -40,9 +41,9 @@ CREATE TABLE `cita` (
 -- Volcado de datos para la tabla `cita`
 --
 
-INSERT INTO `cita` (`cita_Id`, `cita_Cliente_Nombre`, `cita_Fecha`, `cita_Hora`, `cita_Ubicacion`, `cita_Estado_Id`) VALUES
-(3, 'Brian Alvarez', '19/11/2021', '15:50', 'https://www.google.com/maps/place/Edificio+Beyreca+Calle15%23+3-36/@11.2443397,-74.2128433,19z/data=!3m1!4b1!4m5!3m4!1s0x8ef4f5a4c8487a55:0xde033284ae991bb7!8m2!3d11.2443486!4d-74.2122943?hl=es', 1),
-(4, 'Kezia Mercado', '21/11/2021', '15:50', 'https://www.google.com/maps/place/Comuna+1,+Santa+Marta,+Magdalena/@11.2226874,-74.2232033,14z/data=!3m1!4b1!4m12!1m6!3m5!1s0x8ef4f5a4c8487a55:0xde033284ae991bb7!2sEdificio+Beyreca+Calle15%23+3-36!8m2!3d11.2443486!4d-74.2122943!3m4!1s0x8ef4f59ab6580d83:0x66899463359bdae7!8m2!3d11.2243734!4d-74.209128?hl=es', 1);
+INSERT INTO `cita` (`cita_Id`, `cita_Cliente_Nombre`, `cita_Servicio_Id`, `cita_Fecha`, `cita_Hora`, `cita_Ubicacion`, `cita_Estado_Id`) VALUES
+(14, 'Andres Toro', 11, '23/11/2023', '16:30', 'https://www.google.com/maps/@11.2307031,-74.2140439,3a,75y,163.56h,90t/data=!3m7!1e1!3m5!1si8SaTbQW83P0-3alYw9v8Q!2e0!6shttps://streetviewpixels-pa.googleapis.com/v1/thumbnail?panoid=i8SaTbQW83P0-3alYw9v8Q&cb_client=search.revgeo_and_fetch.gps&w=96&h=64&yaw=163.5568&pitch=0&thumbfov=100!7i13312!8i6656?hl=es', 1),
+(16, 'Brian Alvarez', 11, '23/11/2023', '16:30', 'https://www.google.com/maps/@11.2350557,-74.2059131,3a,75y,285.69h,90t/data=!3m7!1e1!3m5!1sP1R6FPRbbBexWB2HGz2fJA!2e0!6shttps:%2F%2Fstreetviewpixels-pa.googleapis.com%2Fv1%2Fthumbnail%3Fpanoid%3DP1R6FPRbbBexWB2HGz2fJA%26cb_client%3Dsearch.revgeo_and_fetch.gps%26w%3D96%26h%3D64%26yaw%3D285.68735%26pitch%3D0%26thumbfov%3D100!7i13312!8i6656?hl=es', 1);
 
 -- --------------------------------------------------------
 
@@ -106,8 +107,10 @@ CREATE TABLE `servicio` (
 --
 
 INSERT INTO `servicio` (`servicio_Id`, `servicio_Nombre`, `servicio_Precio`, `servicio_Estado_Id`) VALUES
-(1, 'Mantenimiento de Equipos PC', 55000, 1),
-(2, 'Mantenimiento de impresoras', 80000, 1);
+(10, 'Mantenimiento de Portatiles Gamer', 95000, 1),
+(11, 'Mantenimiento de Impresoras', 80000, 1),
+(19, 'Mantenimiento de Computadores de mesa', 65000, 1),
+(20, 'Mantenimiento de Computadores de mesa', 65000, 1);
 
 -- --------------------------------------------------------
 
@@ -131,7 +134,8 @@ CREATE TABLE `usuario` (
 --
 ALTER TABLE `cita`
   ADD PRIMARY KEY (`cita_Id`),
-  ADD KEY `cita_Estado_Id` (`cita_Estado_Id`);
+  ADD KEY `cita_ibfk_3` (`cita_Estado_Id`),
+  ADD KEY `cita_ibfk_4` (`cita_Servicio_Id`);
 
 --
 -- Indices de la tabla `disponible`
@@ -157,7 +161,7 @@ ALTER TABLE `producto`
 --
 ALTER TABLE `servicio`
   ADD PRIMARY KEY (`servicio_Id`),
-  ADD KEY `servicio_Estado_Id` (`servicio_Estado_Id`);
+  ADD KEY `servicio_ibfk_1` (`servicio_Estado_Id`);
 
 --
 -- Indices de la tabla `usuario`
@@ -174,7 +178,7 @@ ALTER TABLE `usuario`
 -- AUTO_INCREMENT de la tabla `cita`
 --
 ALTER TABLE `cita`
-  MODIFY `cita_Id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `cita_Id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
 
 --
 -- AUTO_INCREMENT de la tabla `disponible`
@@ -198,7 +202,7 @@ ALTER TABLE `producto`
 -- AUTO_INCREMENT de la tabla `servicio`
 --
 ALTER TABLE `servicio`
-  MODIFY `servicio_Id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `servicio_Id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
 
 --
 -- AUTO_INCREMENT de la tabla `usuario`
@@ -214,7 +218,8 @@ ALTER TABLE `usuario`
 -- Filtros para la tabla `cita`
 --
 ALTER TABLE `cita`
-  ADD CONSTRAINT `cita_ibfk_3` FOREIGN KEY (`cita_Estado_Id`) REFERENCES `estados` (`estado_Id`);
+  ADD CONSTRAINT `cita_ibfk_3` FOREIGN KEY (`cita_Estado_Id`) REFERENCES `estados` (`estado_Id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `cita_ibfk_4` FOREIGN KEY (`cita_Servicio_Id`) REFERENCES `servicio` (`servicio_Id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Filtros para la tabla `producto`
@@ -226,7 +231,7 @@ ALTER TABLE `producto`
 -- Filtros para la tabla `servicio`
 --
 ALTER TABLE `servicio`
-  ADD CONSTRAINT `servicio_ibfk_1` FOREIGN KEY (`servicio_Estado_Id`) REFERENCES `estados` (`estado_Id`);
+  ADD CONSTRAINT `servicio_ibfk_1` FOREIGN KEY (`servicio_Estado_Id`) REFERENCES `estados` (`estado_Id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Filtros para la tabla `usuario`

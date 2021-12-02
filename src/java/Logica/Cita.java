@@ -185,6 +185,73 @@ public class Cita {
         }
         return lista;
     }
+    // ---------------------------- R de CRUD para Servicios individuales --------------------
+    public ArrayList<Cita> consultarCita(){
+        
+        ArrayList<Cita> lista = new ArrayList<>();
+        ConexionBD conexion = new ConexionBD();
+        String sql = "SELECT c.cita_Id, c.cita_Cliente_Nombre, c.cita_Servicio_Id, s.servicio_Nombre, c.cita_Fecha, c.cita_Hora, c.cita_Ubicacion, c.cita_Estado_Id, e.estado_Nombre FROM cita c JOIN estados e ON (cita_Estado_Id = estado_Id) JOIN servicio s ON (cita_Servicio_Id = servicio_Id)";
+        
+        if(this.cita_Id != 0){
+            sql += " WHERE c.cita_Id = "+ this.cita_Id +";";
+        }
+        else if(this.cita_Fecha != null){
+            sql += " WHERE s.cita_Fecha LIKE '%"+ this.cita_Fecha +"%';";
+        }
+        else if(this.cita_Cliente_Nombre != null){
+            sql += " WHERE s.cita_Cliente_Nombre LIKE '%"+ this.cita_Cliente_Nombre +"%';";
+        }else{
+            sql += ";";
+        }
+        
+        System.out.println(sql);
+        
+        
+        // Bloque TryCatch para obtener los errores e identificarlos
+        try {
+            ResultSet rs = conexion.consultarBD(sql);
+            while(rs.next()){
+                this.cita_Id = rs.getInt("cita_Id");
+                this.cita_Cliente_Nombre = rs.getString("cita_Cliente_Nombre");
+                this.cita_Servicio_Id = rs.getInt("cita_Servicio_Id");
+                this.cita_Servicio_Nombre = rs.getString("servicio_Nombre");
+                this.cita_Fecha = rs.getString("cita_Fecha");
+                this.cita_Hora = rs.getString("cita_Hora");
+                this.cita_Ubicacion = rs.getString("cita_Ubicacion");
+                this.cita_Estado_Id = rs.getInt("cita_Estado_Id");
+                this.cita_Estado_Nombre = rs.getString("estado_Nombre");
+            
+                // Creando el objeto
+                Cita c = new Cita();
+                c.setCita_Id(cita_Id);
+                c.setCita_Cliente_Nombre(cita_Cliente_Nombre);
+                c.setCita_Servicio_Id(cita_Servicio_Id);
+                c.setCita_Servicio_Nombre(cita_Servicio_Nombre);
+                c.setCita_Fecha(cita_Fecha);
+                c.setCita_Hora(cita_Hora);
+                c.setCita_Ubicacion(cita_Ubicacion);
+                c.setCita_Estado_Id(cita_Estado_Id);
+                c.setCita_Estado_Nombre(cita_Estado_Nombre);
+                
+                // Agregando el objeto creado a la lista
+                lista.add(c);
+            }
+            
+        } catch (SQLException e) {
+            System.out.println("Error: " + e.getMessage());
+        } finally {
+            conexion.cerrarConexion();
+            System.out.println("Conexion cerrada");
+        }
+        if(lista.size()>0){
+            System.out.println("Lista encontrada");
+            return lista;
+        }else{
+            System.out.println("No se encontro");
+            return null;
+        }
+    }
+    
     
     // ---------------------------- U de CRUD para Citas --------------------
     public boolean actualizarCita(){
@@ -192,6 +259,9 @@ public class Cita {
         // Condiciones para validar la actualizacion de cita_Estado_Id
         if(this.cita_Estado_Nombre == "Habilitado") this.cita_Estado_Id = 1;
         if(this.cita_Estado_Nombre == "Deshabilitado") this.cita_Estado_Id = 2;
+        if(this.cita_Estado_Id == 1) this.cita_Estado_Nombre = "Habilitado" ;
+        if(this.cita_Estado_Id == 2){ this.cita_Estado_Nombre = "Deshabilitado";}
+        else{this.cita_Estado_Id = 1;}
         // Se pepara el query para actualizar con los datos del objeto
         String sql = "UPDATE `cita` SET `cita_Cliente_Nombre`='"+ this.cita_Cliente_Nombre +"', `cita_Servicio_Id`='"+ this.cita_Servicio_Id +"',`cita_Fecha`='"+ this.cita_Fecha +"',`cita_Hora`='"+ this.cita_Hora +"',`cita_Ubicacion`='"+ this.cita_Ubicacion +"',`cita_Estado_Id`='"+ this.cita_Estado_Id +"' WHERE `cita_Id`='"+ this.cita_Id +"';";
         try {
@@ -226,11 +296,12 @@ public class Cita {
     
     
     public static void main(String[] args) {
-//        ArrayList<Cita> lista = new ArrayList<>();
-//        Cita c = new Cita();
-//        lista = c.consultarCitas();
-//        for(Cita cita: lista){
-//            System.out.println(cita.toString());
-//        }
+        ArrayList<Cita> lista = new ArrayList<>();
+        Cita c = new Cita();
+        c.setCita_Id(10);
+        lista = c.consultarCita();
+        for(Cita cita: lista){
+            System.out.println(cita.toString());
+        }
     }
 }

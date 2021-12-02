@@ -35,17 +35,19 @@
                         <button class="btn btn-primary btn-xs" ng-click="sc.guardar()">C</button>
                         <button class="btn btn-primary btn-xs" ng-click="sc.listar()">R</button>
                         <button class="btn btn-primary btn-xs" ng-click="sc.actualizar()">U</button>
-                        <button class="btn btn-primary btn-xs" ng-click="sc.borrar()">D</button>
+                        <button class="btn btn-primary btn-xs" ng-click="sc.eliminar()">D</button>
                     </div>
                 </div>
                 
                 <div class="col-sm-10"><!--espacio de la tabla-->
-                    <table class="table table-hover">
+                    <table class="table table-hover table-bordered">
                         <thead>
                             <th>Id</th>
                             <th>Servicio</th>
                             <th>Precio</th>
                             <th>Estado</th>
+                            <th>Editar</th>
+                            <th>Eliminar</th>
                         </thead>
                         <tbody>
                             <tr ng-repeat="s in sc.servicios">
@@ -53,12 +55,16 @@
                                 <td>{{s.servicio_Nombre}}</td>
                                 <td>{{s.servicio_Precio}}</td>
                                 <td>{{s.servicio_Estado_Nombre}}</td>
+                                <td><button class="btn btn-primary btn-xs" ng-click="sc.consultarIndividual(s.servicio_Id)">Editar</button></td>
+                                <td><button class="btn btn-danger btn-xs" ng-click="sc.eliminar(s.servicio_Id)">Eliminar</button></td>
+                                <td></td>
                             </tr>
                         </tbody>
                     </table>
                 </div>
             </div>
         </div>
+        <!--######################## Script para las funcionalidades ###################################-->
         <script>
             var app = angular.module('servicio', []);
             app.controller('servicioController', ['$http', controladorServicio]);
@@ -80,7 +86,7 @@
                 sc.guardar = function(){
                     var parametros = {
                         proceso:'guardar',
-                        servicio_Id: sc.servicio_Id,
+                      //servicio_Id: sc.servicio_Id,
                         servicio_Nombre: sc.servicio_Nombre,
                         servicio_Precio: sc.servicio_Precio,
                         servicio_Estado_Id: sc.servicio_Estado_Id
@@ -90,8 +96,8 @@
                         url: 'peticionesServicio.jsp',
                         params: parametros
                     }).then(function(respuesta){
-                        if(respuesta.data.ok = true){
-                            if(respuesta.data.guardar = true){
+                        if(respuesta.data.ok === true){
+                            if(respuesta.data.guardar === true){
                                 alert('Guardado');
                             }else{
                                 alert('No Guardado');
@@ -102,6 +108,80 @@
                     });
                     
                 };
+                sc.actualizar = function(){
+                    var parametros = {
+                        proceso: 'actualizar',
+                        servicio_Id: sc.servicio_Id,
+                        servicio_Nombre: sc.servicio_Nombre,
+                        servicio_Precio: sc.servicio_Precio,
+                        servicio_Estado_Id: sc.servicio_Estado_Id                        
+                    };
+                    $http({
+                        method: 'POST',
+                        url: 'peticionesServicio.jsp',
+                        params: parametros
+                    }).then(function(respuesta){
+                        if(respuesta.data.ok === true){
+                            if(respuesta.data.actualizar === true){
+                                alert('Servicio actualizado');
+                            }else{
+                                alert('Servicio no actualizado');
+                            }
+                        }else{
+                            alert(respuesta.data.errorMesg)
+                        }
+                    });
+                };
+                sc.eliminar = function(id){
+                    var parametros = {
+                        proceso: 'eliminar',
+                        servicio_Id: id
+                    };
+                    $http({
+                        method: 'POST',
+                        url: 'peticionesServicio.jsp',
+                        params: parametros
+                    }).then(function(respuesta){
+                        if(respuesta.data.ok === true){
+                            if(respuesta.data.eliminar === true){
+                                alert('Eliminado');
+                            }else{
+                                alert('No Eliminado');
+                            }
+                        }else{
+                            alert(respuesta.data.errorMsg);
+                        }
+                    });
+                };
+                sc.consultarIndividual = function(id){
+//                    alert('El id seleccionado es: ' + id);
+                    var parametros = {
+                        proceso: 'listarIndividual',
+                        servicio_Id: id                        
+                    };
+                    $http({
+                        method: 'POST',
+                        url: 'peticionesServicio.jsp',
+                        params: parametros
+                    }).then(function(respuesta){
+                        if(respuesta.data.ok === true){
+                            if(respuesta.data.listarIndividual === true){
+                                sc.servicio_Id = respuesta.data.Servicios[0].servicio_Id;
+                                sc.servicio_Nombre = respuesta.data.Servicios[0].servicio_Nombre;
+                                sc.servicio_Precio = respuesta.data.Servicios[0].servicio_Precio;
+                                sc.servicio_Estado_Id = respuesta.data.Servicios[0].servicio_Estado_Id;
+                            }else{
+                                alert('No se pudo cargar el registro');
+                            };
+                        }else{
+                            alert(respuesta.data.errorMsg);
+                        };
+                    });
+                };
+                init = function(){
+                    sc.listar();
+                };
+                init();
             }
         </script>
     </body>

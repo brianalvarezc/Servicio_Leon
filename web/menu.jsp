@@ -22,7 +22,7 @@
     <body>
         <!-- div del NavBar -->
         <div>
-            <nav class="navbar navbar-ligth">
+            <nav class="navbar navbar-inverse">
               <div class="container-fluid">
                 <div class="navbar-header">
                   <a class="navbar-brand" href="index.jsp">Servicio Leon</a>
